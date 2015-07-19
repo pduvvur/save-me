@@ -1,6 +1,9 @@
 package com.pduvvur.saveme.guardian;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -8,16 +11,23 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.pduvvur.saveme.R;
+import com.pduvvur.saveme.adapter.GuardianListAdapter;
 import com.pduvvur.saveme.db.GuardiansDataSource;
 
-public class EditGuardianActivity extends ActionBarActivity
+import java.util.List;
+
+public class EditGuardianActivity extends ActionBarActivity implements AdapterView.OnItemClickListener
 {
     private static final int PICK_CONTACT_REQUEST = 1;
     private GuardiansDataSource m_guardiansDataSource;
-    private Toolbar m_toolbar;
+    private GuardianListAdapter m_adapter;
+    List<Guardian> m_guardianList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,27 +35,27 @@ public class EditGuardianActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_guardian);
 
-        m_toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
-        setSupportActionBar(m_toolbar);
-
- /*       ImageButton addFromContactListButton = (ImageButton) findViewById(
-                R.id.add_from_contact_list_button);
+        // Attaching the layout to the toolbar object
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
 
         m_guardiansDataSource = new GuardiansDataSource(this);
         m_guardiansDataSource.open();
 
-        List<Guardian> guardianList = m_guardiansDataSource.getAllGuardians();
-        ArrayAdapter<Guardian> adapter = new ArrayAdapter<Guardian>(this,
-                android.R.layout.simple_list_item_1, guardianList);
-        setListAdapter(adapter);
+        ListView listView = (ListView) findViewById(R.id.list_guardians);
+        // Queries the db to get list of guardians.
+        m_guardianList = m_guardiansDataSource.getAllGuardians();
+        // Create a new adapter for the listview
+        m_adapter = new GuardianListAdapter(this, m_guardianList);
+        listView.setAdapter(m_adapter);
+        listView.setOnItemClickListener(this);
+    }
 
-        addFromContactListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Shows the contact list for the user to pick a contact from.
-                pickContact();
-            }
-        });*/
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        Guardian guardian = m_guardianList.get(position);
+        Toast.makeText(this, guardian.toString(), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -66,7 +76,7 @@ public class EditGuardianActivity extends ActionBarActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-/*        // Check which request it is that we're responding to
+        // Check which request it is that we're responding to
         if (requestCode == PICK_CONTACT_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
@@ -105,7 +115,7 @@ public class EditGuardianActivity extends ActionBarActivity
                     }
                 }).start();
             }
-        }*/
+        }
     }
 
     /**
@@ -116,7 +126,7 @@ public class EditGuardianActivity extends ActionBarActivity
      * @param contactNumber Contact number of the guardian
      */
     @SuppressWarnings("unchecked")
-/*    private void addGuardian(String guardianName, String contactNumber)
+    private void addGuardian(String guardianName, String contactNumber)
     {
         try {
 //            int count = m_guardiansDataSource.getGuardianCount();
@@ -129,11 +139,9 @@ public class EditGuardianActivity extends ActionBarActivity
                 this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ArrayAdapter<Guardian> adapter = (ArrayAdapter<Guardian>)
-                                getListAdapter();
                         if(rowId != -1) {
-                            adapter.add(guardian);
-                            adapter.notifyDataSetChanged();
+                            m_guardianList.add(guardian);
+                            m_adapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -147,18 +155,18 @@ public class EditGuardianActivity extends ActionBarActivity
         } catch (SQLiteException e){
             // TODO Build alert / toast saying unexpected error occurred
         }
-    }*/
+    }
 
     @Override
     public void onPause()
     {
-//        m_guardiansDataSource.close();
+        m_guardiansDataSource.close();
         super.onPause();
     }
 
     public void onResume()
     {
-//        m_guardiansDataSource.open();
+        m_guardiansDataSource.open();
         super.onResume();
     }
 
@@ -180,7 +188,10 @@ public class EditGuardianActivity extends ActionBarActivity
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_add_guardian){
-            Toast.makeText(this, "yayy", Toast.LENGTH_LONG).show();
+            // TODO
+            Toast.makeText(this, "To be implemented", Toast.LENGTH_LONG).show();
+        } else if(id == R.id.action_add_from_contact){
+            pickContact();
         }
 
         return super.onOptionsItemSelected(item);

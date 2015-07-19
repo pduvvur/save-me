@@ -41,11 +41,6 @@ public class DatabaseHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        /*String create_table = "create table "
-                + TABLE_GUARDIANS + "(" + COLUMN_ID
-                + " integer primary key, " + COLUMN_PHONE_NUMBER
-                + " text not null, " + COLUMN_GUARDIAN_NAME
-                + " text not null);";*/
         String create_table = "create table "
                 + TABLE_GUARDIANS + "("
                 + COLUMN_GUARDIAN_NAME + " text not null, "

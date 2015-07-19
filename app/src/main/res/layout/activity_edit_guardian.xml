@@ -11,31 +11,7 @@
     <ListView
         android:id="@+id/list_guardians"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-  <!--  <RelativeLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <ImageButton
-            android:id="@+id/add_contact_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:background="@color/transparent"
-            android:paddingLeft="20dp"
-            android:src="@drawable/contact" />
-
-        <ImageButton
-            android:id="@+id/add_from_contact_list_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:background="@color/transparent"
-            android:paddingRight="20dp"
-            android:src="@drawable/address_book" />
-
-    </RelativeLayout> -->
+        android:layout_below="@+id/tool_bar"/>
 
 </RelativeLayout>
