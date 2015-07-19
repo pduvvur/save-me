@@ -3,5 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_edit_guardian">EditGuardianActivity</string>
+    <string name="title_activity_edit_guardian">Edit Guardians</string>
+    <string name="add_guardian">Add Guardian</string>
 </resources>

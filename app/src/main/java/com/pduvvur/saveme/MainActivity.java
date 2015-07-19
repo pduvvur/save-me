@@ -6,7 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.pduvvur.saveme.contact.EditGuardianActivity;
+import com.pduvvur.saveme.guardian.EditGuardianActivity;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -20,6 +20,11 @@ public class MainActivity extends ActionBarActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        /*Yaml yaml = new Yaml(new Constructor(Config.class));
+        InputStream in = this.getResources().openRawResource(R.raw.config);
+        Config config = (Config) yaml.load(in);
+        System.out.println("Mass aa " + config.getMaxGuardians());*/
+
         Intent intent = new Intent(this, EditGuardianActivity.class);
         startActivity(intent);
     }

@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".contact.EditGuardianActivity"
+            android:name=".guardian.EditGuardianActivity"
             android:label="@string/title_activity_edit_guardian"
             android:screenOrientation="portrait">
         </activity>

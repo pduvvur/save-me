@@ -1,31 +1,43 @@
-package com.pduvvur.saveme.contact;
+package com.pduvvur.saveme.guardian;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.pduvvur.saveme.R;
+import com.pduvvur.saveme.db.GuardiansDataSource;
 
 public class EditGuardianActivity extends ActionBarActivity
 {
     private static final int PICK_CONTACT_REQUEST = 1;
-    private String m_contactName;
-    private String m_contactNumber;
+    private GuardiansDataSource m_guardiansDataSource;
+    private Toolbar m_toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_guardian);
-        ImageButton addFromContactListButton = (ImageButton) findViewById(
+
+        m_toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(m_toolbar);
+
+ /*       ImageButton addFromContactListButton = (ImageButton) findViewById(
                 R.id.add_from_contact_list_button);
+
+        m_guardiansDataSource = new GuardiansDataSource(this);
+        m_guardiansDataSource.open();
+
+        List<Guardian> guardianList = m_guardiansDataSource.getAllGuardians();
+        ArrayAdapter<Guardian> adapter = new ArrayAdapter<Guardian>(this,
+                android.R.layout.simple_list_item_1, guardianList);
+        setListAdapter(adapter);
 
         addFromContactListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,7 +45,7 @@ public class EditGuardianActivity extends ActionBarActivity
                 // Shows the contact list for the user to pick a contact from.
                 pickContact();
             }
-        });
+        });*/
     }
 
     /**
@@ -41,7 +53,8 @@ public class EditGuardianActivity extends ActionBarActivity
      */
     private void pickContact()
     {
-        Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+        Intent pickContactIntent = new Intent(Intent.ACTION_PICK,
+                Uri.parse("content://contacts"));
         // Show user only contacts with phone numbers
         pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
         startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
@@ -53,7 +66,7 @@ public class EditGuardianActivity extends ActionBarActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        // Check which request it is that we're responding to
+/*        // Check which request it is that we're responding to
         if (requestCode == PICK_CONTACT_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
@@ -64,7 +77,7 @@ public class EditGuardianActivity extends ActionBarActivity
                         ContactsContract.Contacts.DISPLAY_NAME};
 
                 // Perform the query on the contact to get the NUMBER and DISPLAY_NAME
-                // columns. We do it in a worker to thread to avoid blocking the UI thread.
+                // columns. We do it in a worker thread to avoid blocking the UI thread.
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -77,12 +90,13 @@ public class EditGuardianActivity extends ActionBarActivity
                             // Retrieve the phone number from the NUMBER column
                             int column = cursor.getColumnIndex(ContactsContract.
                                     CommonDataKinds.Phone.NUMBER);
-                            m_contactNumber = cursor.getString(column);
-                            // Retrieve the phone number from the NUMBER column
+                            String contactNumber  = cursor.getString(column);
+                            // Retrieve the contact name from the DISPLAY_NAME column
                             column = cursor.getColumnIndex(ContactsContract.Contacts.
                                     DISPLAY_NAME);
-                            m_contactName = cursor.getString(column);
-                            // TODO: Store the info in the database.
+                            String guardianName = cursor.getString(column);
+                            addGuardian(guardianName, contactNumber);
+
                         } finally {
                             if (cursor != null) {
                                 cursor.close();
@@ -91,9 +105,62 @@ public class EditGuardianActivity extends ActionBarActivity
                     }
                 }).start();
             }
-        }
+        }*/
     }
 
+    /**
+     * Adds a guardian to the database if the count has not reached maximum
+     * which is specified in the config file.
+     *
+     * @param guardianName Name of the guardian
+     * @param contactNumber Contact number of the guardian
+     */
+    @SuppressWarnings("unchecked")
+/*    private void addGuardian(String guardianName, String contactNumber)
+    {
+        try {
+//            int count = m_guardiansDataSource.getGuardianCount();
+            int count = 0;
+            // TODO make the count gettable from the config file.
+            if(count <= 5) {
+                final Guardian guardian = new Guardian(guardianName, contactNumber);
+                final long rowId = m_guardiansDataSource.addGuardian(guardian);
+
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayAdapter<Guardian> adapter = (ArrayAdapter<Guardian>)
+                                getListAdapter();
+                        if(rowId != -1) {
+                            adapter.add(guardian);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+            } else {
+                // TODO Build alert dialog saying max reached.
+            }
+        } catch (SQLiteConstraintException e){
+            if(e.getMessage().contains("UNIQUE")){
+                // TODO Build alert dialog saying guardian already exists.
+            }
+        } catch (SQLiteException e){
+            // TODO Build alert / toast saying unexpected error occurred
+        }
+    }*/
+
+    @Override
+    public void onPause()
+    {
+//        m_guardiansDataSource.close();
+        super.onPause();
+    }
+
+    public void onResume()
+    {
+//        m_guardiansDataSource.open();
+        super.onResume();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,6 +179,8 @@ public class EditGuardianActivity extends ActionBarActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_add_guardian){
+            Toast.makeText(this, "yayy", Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
