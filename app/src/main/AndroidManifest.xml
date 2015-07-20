@@ -3,6 +3,7 @@
     package="com.pduvvur.saveme" >
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,7 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +22,11 @@
         <activity
             android:name=".guardian.EditGuardianActivity"
             android:label="@string/title_activity_edit_guardian"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".guardian.AddModifyGuardianActivity"
+            android:label="@string/title_activity_add_modify_guardian" >
         </activity>
     </application>
 

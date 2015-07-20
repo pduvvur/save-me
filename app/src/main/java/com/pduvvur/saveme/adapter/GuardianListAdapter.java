@@ -1,5 +1,6 @@
 package com.pduvvur.saveme.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.pduvvur.saveme.R;
+import com.pduvvur.saveme.db.GuardiansDataSource;
 import com.pduvvur.saveme.guardian.Guardian;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 public class GuardianListAdapter extends BaseAdapter
 {
     private Context m_context;
+    private Activity m_activity;
     protected List<Guardian> m_guardianList;
     private LayoutInflater m_layoutInflater;
 
@@ -30,9 +33,11 @@ public class GuardianListAdapter extends BaseAdapter
     private ColorGenerator m_colorGenerator = ColorGenerator.MATERIAL;
     private TextDrawable.IBuilder m_drawableBuilder;
 
-    public GuardianListAdapter(Context context, List<Guardian> guardiansList)
+    public GuardianListAdapter(Context context, List<Guardian> guardiansList,
+                               Activity activity)
     {
         m_context = context;
+        m_activity = activity;
         m_guardianList = guardiansList;
         m_layoutInflater = LayoutInflater.from(context);
         m_drawableBuilder = TextDrawable.builder().round();
@@ -67,18 +72,52 @@ public class GuardianListAdapter extends BaseAdapter
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Guardian guardian = m_guardianList.get(position);
-
-        TextDrawable drawable = m_drawableBuilder.build(String.valueOf(
-                guardian.getName().charAt(0)), m_colorGenerator.getColor(guardian.getName()));
+        final Guardian guardian = m_guardianList.get(position);
+        // Get the first char of the name to display in the image.
+        String firstChar;
+        if(guardian.getName().length() > 0){
+            firstChar = String.valueOf(guardian.getName().charAt(0));
+        } else {
+            firstChar = " ";
+        }
+        // Build the image
+        TextDrawable drawable = m_drawableBuilder.build(firstChar,
+                m_colorGenerator.getColor(guardian.getName()));
 
         holder.m_numberView.setText(guardian.getPhoneNumber());
         holder.m_nameView.setText(guardian.getName());
         holder.m_guardianImage.setImageDrawable(drawable);
+        // Delete button for a list item
         holder.m_deleteGuardianButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(m_context, "Delete", Toast.LENGTH_LONG).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final GuardiansDataSource guardiansDataSource =
+                                new GuardiansDataSource(m_context);
+                        guardiansDataSource.open();
+                        // Delete guardian
+                        final int numRowsDeleted = guardiansDataSource.
+                                deleteGuardian(guardian);
+
+                        m_activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(numRowsDeleted == 1){
+                                    m_guardianList.remove(position);
+                                    notifyDataSetChanged();
+                                    guardiansDataSource.close();
+                                    Toast.makeText(m_context, "Guardian deleted!",
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(m_context, "Error deleting guardian",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                }).start();
             }
         });
 

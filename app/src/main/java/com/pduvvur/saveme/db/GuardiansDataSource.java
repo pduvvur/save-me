@@ -58,6 +58,19 @@ public class GuardiansDataSource
         }
     }
 
+    /**
+     *
+     * @param guardian The guardian to be deleted.
+     *
+     * @return number of rows deleted
+     */
+    public int deleteGuardian(Guardian guardian)
+    {
+        String whereClause = DatabaseHelper.COLUMN_PHONE_NUMBER + "=?";
+        String[] whereArgs = new String[] {guardian.getPhoneNumber()};
+        return db.delete(DatabaseHelper.TABLE_GUARDIANS, whereClause, whereArgs);
+    }
+
     // Getting contacts Count
     public int getGuardianCount()
     {

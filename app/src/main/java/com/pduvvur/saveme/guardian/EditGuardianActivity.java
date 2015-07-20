@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,7 +22,8 @@ import com.pduvvur.saveme.db.GuardiansDataSource;
 
 import java.util.List;
 
-public class EditGuardianActivity extends ActionBarActivity implements AdapterView.OnItemClickListener
+public class EditGuardianActivity extends AppCompatActivity
+        implements AdapterView.OnItemClickListener
 {
     private static final int PICK_CONTACT_REQUEST = 1;
     private GuardiansDataSource m_guardiansDataSource;
@@ -46,7 +47,7 @@ public class EditGuardianActivity extends ActionBarActivity implements AdapterVi
         // Queries the db to get list of guardians.
         m_guardianList = m_guardiansDataSource.getAllGuardians();
         // Create a new adapter for the listview
-        m_adapter = new GuardianListAdapter(this, m_guardianList);
+        m_adapter = new GuardianListAdapter(this, m_guardianList, EditGuardianActivity.this);
         listView.setAdapter(m_adapter);
         listView.setOnItemClickListener(this);
     }
