@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.pduvvur.saveme.guardian.AddModifyGuardianActivity">
+
+    <include
+        android:id="@+id/mod_tool_bar"
+        layout="@layout/tool_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:layout_below="@+id/mod_tool_bar" >
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/guardian_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/guardian_name"
+            android:textCursorDrawable="@null"
+            app:met_textColor="@color/primary_text"
+            app:met_baseColor="@color/secondary_text"
+            app:met_primaryColor="@color/primary_dark"
+            app:met_floatingLabel="highlight"
+            app:met_iconLeft="@drawable/ic_person"
+            app:met_iconPadding="0dp" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/guardian_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/guardian_number"
+            android:layout_below="@+id/guardian_name"
+            android:textCursorDrawable="@null"
+            android:inputType="phone"
+            app:met_textColor="@color/primary_text"
+            app:met_baseColor="@color/secondary_text"
+            app:met_primaryColor="@color/primary_dark"
+            app:met_floatingLabel="highlight"
+            app:met_iconLeft="@drawable/ic_phone"
+            app:met_iconPadding="0dp" />
+
+        <com.rey.material.widget.Button
+            android:id="@+id/save_button"
+            style="@style/Material.Drawable.Ripple.Touch.MatchView.Light"
+            app:rd_rippleColor="#FFFFFF"
+            android:layout_below="@+id/guardian_number"
+            android:layout_alignParentRight="true"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:background="@color/accent"
+            android:elevation="9dp"
+            android:text="@string/save"/>
+
+        <com.rey.material.widget.Button
+            android:id="@+id/cancel_button"
+            style="@style/Material.Drawable.Ripple.Touch"
+            android:layout_below="@+id/guardian_number"
+            android:layout_toLeftOf="@id/save_button"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:background="@color/secondary_text"
+            android:elevation="9dp"
+            android:text="@string/cancel"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
