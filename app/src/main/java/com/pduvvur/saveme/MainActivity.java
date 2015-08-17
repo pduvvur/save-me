@@ -3,10 +3,11 @@ package com.pduvvur.saveme;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.pduvvur.saveme.guardian.EditGuardianActivity;
+import com.pduvvur.saveme.guardian.ListGuardianActivity;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -15,6 +16,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Attaching the layout to the toolbar object
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_tool_bar);
+        setSupportActionBar(toolbar);
+
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
@@ -25,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
         Config config = (Config) yaml.load(in);
         System.out.println("Mass aa " + config.getMaxGuardians());*/
 
-        Intent intent = new Intent(this, EditGuardianActivity.class);
+        Intent intent = new Intent(this, ListGuardianActivity.class);
         startActivity(intent);
     }
 

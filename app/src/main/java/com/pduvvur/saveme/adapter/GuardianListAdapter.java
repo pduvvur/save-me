@@ -76,7 +76,7 @@ public class GuardianListAdapter extends BaseAdapter
         // Get the first char of the name to display in the image.
         String firstChar;
         if(guardian.getName().length() > 0){
-            firstChar = String.valueOf(guardian.getName().charAt(0));
+            firstChar = String.valueOf(guardian.getName().charAt(0)).toUpperCase();
         } else {
             firstChar = " ";
         }

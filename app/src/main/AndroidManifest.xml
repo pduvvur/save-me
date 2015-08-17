@@ -20,13 +20,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".guardian.EditGuardianActivity"
+            android:name=".guardian.ListGuardianActivity"
             android:label="@string/title_activity_edit_guardian"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".guardian.AddModifyGuardianActivity"
-            android:label="@string/title_activity_add_modify_guardian" >
+            android:label="@string/title_activity_add_modify_guardian"
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

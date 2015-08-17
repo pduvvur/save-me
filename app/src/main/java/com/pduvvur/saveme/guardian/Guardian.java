@@ -24,6 +24,16 @@ public class Guardian
         return m_phoneNumber;
     }
 
+    public void setName(String name)
+    {
+        m_name = name;
+    }
+
+    public void setNumber(String number)
+    {
+        m_phoneNumber = number;
+    }
+
     @Override
     public String toString()
     {

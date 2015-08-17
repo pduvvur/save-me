@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.pduvvur.saveme.guardian.EditGuardianActivity">
+    tools:context="com.pduvvur.saveme.guardian.ListGuardianActivity">
 
     <item
         android:id="@+id/action_add_guardian"
         android:orderInCategory="300"
-        android:title="@string/add_guardian"
+        android:title="@string/create_guardian"
         android:icon="@drawable/ic_add_guardian"
         app:showAsAction="ifRoom" />
 

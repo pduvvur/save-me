@@ -39,6 +39,11 @@ public class GuardiansDataSource
         dbHelper.close();
     }
 
+    public boolean isOpen()
+    {
+        return db.isOpen();
+    }
+
     public long addGuardian(Guardian guardian) throws SQLiteException
     {
         ContentValues values = new ContentValues();
@@ -71,6 +76,17 @@ public class GuardiansDataSource
         return db.delete(DatabaseHelper.TABLE_GUARDIANS, whereClause, whereArgs);
     }
 
+    public int updateGuardian(String oldNumber, String newNumber, String newName)
+    {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_GUARDIAN_NAME, newName); // Guardian Name
+        values.put(DatabaseHelper.COLUMN_PHONE_NUMBER, newNumber); // Guardian Phone
+
+        String whereClause = DatabaseHelper.COLUMN_PHONE_NUMBER + "=?";
+        String[] whereArgs = new String[] {oldNumber};
+        return db.update(DatabaseHelper.TABLE_GUARDIANS, values, whereClause, whereArgs);
+    }
+
     // Getting contacts Count
     public int getGuardianCount()
     {
@@ -97,7 +113,6 @@ public class GuardiansDataSource
             guardians.add(guardian);
             cursor.moveToNext();
         }
-        // make sure to close the cursor
         cursor.close();
         return guardians;
     }

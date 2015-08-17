@@ -22,10 +22,13 @@ import com.pduvvur.saveme.db.GuardiansDataSource;
 
 import java.util.List;
 
-public class EditGuardianActivity extends AppCompatActivity
+public class ListGuardianActivity extends AppCompatActivity
         implements AdapterView.OnItemClickListener
 {
     private static final int PICK_CONTACT_REQUEST = 1;
+    private static final int EDIT_CONTACT_REQUEST = 2;
+    private static final int ADD_CONTACT_REQUEST = 3;
+
     private GuardiansDataSource m_guardiansDataSource;
     private GuardianListAdapter m_adapter;
     List<Guardian> m_guardianList;
@@ -34,7 +37,7 @@ public class EditGuardianActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_guardian);
+        setContentView(R.layout.activity_list_guardian);
 
         // Attaching the layout to the toolbar object
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -47,7 +50,7 @@ public class EditGuardianActivity extends AppCompatActivity
         // Queries the db to get list of guardians.
         m_guardianList = m_guardiansDataSource.getAllGuardians();
         // Create a new adapter for the listview
-        m_adapter = new GuardianListAdapter(this, m_guardianList, EditGuardianActivity.this);
+        m_adapter = new GuardianListAdapter(this, m_guardianList, ListGuardianActivity.this);
         listView.setAdapter(m_adapter);
         listView.setOnItemClickListener(this);
     }
@@ -57,6 +60,15 @@ public class EditGuardianActivity extends AppCompatActivity
     {
         Guardian guardian = m_guardianList.get(position);
         Toast.makeText(this, guardian.toString(), Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, AddModifyGuardianActivity.class);
+        intent.putExtra(AddModifyGuardianActivity.OLD_GUARDIAN_NAME_KEY,
+                guardian.getName());
+        intent.putExtra(AddModifyGuardianActivity.OLD_GUARDIAN_NUM_KEY,
+                guardian.getPhoneNumber());
+        intent.putExtra(AddModifyGuardianActivity.TITLE_KEY, "Edit Guardian");
+        intent.putExtra(AddModifyGuardianActivity.GUARDIAN_INDEX_IN_LIST, position);
+
+        startActivityForResult(intent, EDIT_CONTACT_REQUEST);
     }
 
     /**
@@ -116,6 +128,30 @@ public class EditGuardianActivity extends AppCompatActivity
                     }
                 }).start();
             }
+        } else if (requestCode == EDIT_CONTACT_REQUEST) {
+            // Check if it was successful
+            if (resultCode == RESULT_OK) {
+                String newGuardianName = data.getStringExtra(
+                        AddModifyGuardianActivity.NEW_GUARDIAN_NAME_KEY);
+                String oldContactNumber = data.getStringExtra(
+                        AddModifyGuardianActivity.OLD_GUARDIAN_NUM_KEY);
+                String newContactNumber = data.getStringExtra(
+                        AddModifyGuardianActivity.NEW_GUARDIAN_NUM_KEY);
+
+                int guardianIndex = data.getIntExtra(AddModifyGuardianActivity.GUARDIAN_INDEX_IN_LIST, -1);
+                // TODO call updateGuardian method instead.
+                updateGuardian(newGuardianName, oldContactNumber, newContactNumber, guardianIndex);
+            }
+        } else if (requestCode == ADD_CONTACT_REQUEST) {
+            // Check if it was successful
+            if(resultCode == RESULT_OK){
+                String newGuardianName = data.getStringExtra(
+                        AddModifyGuardianActivity.NEW_GUARDIAN_NAME_KEY);
+                String newContactNumber = data.getStringExtra(
+                        AddModifyGuardianActivity.NEW_GUARDIAN_NUM_KEY);
+
+                addGuardian(newGuardianName, newContactNumber);
+            }
         }
     }
 
@@ -129,6 +165,10 @@ public class EditGuardianActivity extends AppCompatActivity
     @SuppressWarnings("unchecked")
     private void addGuardian(String guardianName, String contactNumber)
     {
+        // Check if the database is closed and open it.
+        if(!m_guardiansDataSource.isOpen()){
+            m_guardiansDataSource.open();
+        }
         try {
 //            int count = m_guardiansDataSource.getGuardianCount();
             int count = 0;
@@ -147,14 +187,72 @@ public class EditGuardianActivity extends AppCompatActivity
                     }
                 });
             } else {
-                // TODO Build alert dialog saying max reached.
+                // TODO Build alert dialog saying max reached. tun on ui thread?
+                Toast.makeText(this, "Max limit reached", Toast.LENGTH_LONG).show();
             }
         } catch (SQLiteConstraintException e){
             if(e.getMessage().contains("UNIQUE")){
                 // TODO Build alert dialog saying guardian already exists.
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ListGuardianActivity.this, "Already exists", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        } catch (SQLiteException e){
+            // TODO Build alert / toast saying unexpected error occurred run on ui thread?
+            Toast.makeText(this, "Error occurred", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Updates the details of a guardian in the database.
+     * @param newGuardianName  New name of the guardian
+     * @param oldContactNumber Old contact number of the guardian
+     * @param newContactNumber New contact number of the guardian
+     * @param guardianIndex    Index of the guardian in the list.
+     *
+     */
+    @SuppressWarnings("unchecked")
+    private void updateGuardian(final String newGuardianName, String oldContactNumber,
+                                final String newContactNumber, final int guardianIndex)
+    {
+        // Check if the database is closed and open it.
+        if(!m_guardiansDataSource.isOpen()){
+            m_guardiansDataSource.open();
+        }
+        try {
+            int count = 0;
+            // TODO make the count gettable from the config file.
+            if(count <= 5) {
+                final int numRowsAffected = m_guardiansDataSource.updateGuardian(oldContactNumber,
+                        newContactNumber, newGuardianName);
+
+                if(numRowsAffected == 1){
+                    this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Guardian guardian = m_guardianList.get(guardianIndex);
+                            guardian.setName(newGuardianName);
+                            guardian.setNumber(newContactNumber);
+                            m_adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            } else {
+                // TODO Build alert saying more than one row affected
+                // This should never happen
+                Toast.makeText(this, "More than one row affected", Toast.LENGTH_LONG).show();
+            }
+        } catch (SQLiteConstraintException e){
+            if(e.getMessage().contains("UNIQUE")){
+                // TODO Build alert dialog saying guardian already exists.
+                Toast.makeText(this, "Already exists", Toast.LENGTH_LONG).show();
             }
         } catch (SQLiteException e){
             // TODO Build alert / toast saying unexpected error occurred
+            Toast.makeText(this, "Error occurred", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -165,6 +263,7 @@ public class EditGuardianActivity extends AppCompatActivity
         super.onPause();
     }
 
+    @Override
     public void onResume()
     {
         m_guardiansDataSource.open();
@@ -174,7 +273,7 @@ public class EditGuardianActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_edit_guardian, menu);
+        getMenuInflater().inflate(R.menu.menu_list_guardian, menu);
         return true;
     }
 
@@ -185,12 +284,14 @@ public class EditGuardianActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        // TODO change to switch case?
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_add_guardian){
-            // TODO
-            Toast.makeText(this, "To be implemented", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, AddModifyGuardianActivity.class);
+            intent.putExtra(AddModifyGuardianActivity.TITLE_KEY, "Add Guardian");
+            startActivityForResult(intent, ADD_CONTACT_REQUEST);
         } else if(id == R.id.action_add_from_contact){
             pickContact();
         }
