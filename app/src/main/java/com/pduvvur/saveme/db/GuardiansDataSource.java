@@ -96,7 +96,6 @@ public class GuardiansDataSource
 
         // return count
         return cursor.getCount();
-
     }
 
     public List<Guardian> getAllGuardians()

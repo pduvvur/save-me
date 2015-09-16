@@ -8,9 +8,14 @@
         android:id="@+id/main_tool_bar"
         layout="@layout/tool_bar" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+    <Button
+        android:id="@+id/save_me_button"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/round_button"
+        android:layout_centerInParent="true"
+        android:text="@string/save_me"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"/>
 
 </RelativeLayout>

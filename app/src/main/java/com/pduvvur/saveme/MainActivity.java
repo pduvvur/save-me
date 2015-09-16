@@ -6,8 +6,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
+import com.pduvvur.saveme.db.GuardiansDataSource;
+import com.pduvvur.saveme.guardian.Guardian;
 import com.pduvvur.saveme.guardian.ListGuardianActivity;
+
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -20,6 +26,21 @@ public class MainActivity extends ActionBarActivity {
         // Attaching the layout to the toolbar object
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_tool_bar);
         setSupportActionBar(toolbar);
+
+        Button saveMeButton = (Button) findViewById(R.id.save_me_button);
+        saveMeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GuardiansDataSource guardiansDataSource = new GuardiansDataSource(MainActivity.this);
+                guardiansDataSource.open();
+                List<Guardian> guardiansList = guardiansDataSource.getAllGuardians();
+                for(Guardian guardian : guardiansList){
+                    System.out.println(guardian.getPhoneNumber());
+//                    sendTextMessage(guardian.getPhoneNumber());
+                }
+                guardiansDataSource.close();
+            }
+        });
 
         try {
             Thread.sleep(1500);
